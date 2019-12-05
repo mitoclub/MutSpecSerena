@@ -1,4 +1,4 @@
-# SELECTED FILES FROM WGS EGA ARCHIVE WITH SERENA DATA
+# SELECTED FILES FROM WGS EGA ARCHIVE 
 
 ## Sample_File.map
 File `Sample_File.map` contains lines:
