@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAMPLE_SET>
+  <SAMPLE alias="3343b830-7077-0135-45ab-005056a878e4" center_name="SC" broker_name="EGA" accession="ERS3051075" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <IDENTIFIERS>
+      <PRIMARY_ID>ERS3051075</PRIMARY_ID>
+      <SUBMITTER_ID namespace="SC">3343b830-7077-0135-45ab-005056a878e4</SUBMITTER_ID>
+    </IDENTIFIERS>
+    <TITLE>MSM0.124_s1</TITLE>
+    <SAMPLE_NAME>
+      <TAXON_ID>9606</TAXON_ID>
+      <COMMON_NAME>human</COMMON_NAME>
+      <SCIENTIFIC_NAME>Homo sapiens</SCIENTIFIC_NAME>
+    </SAMPLE_NAME>
+    <SAMPLE_ATTRIBUTES>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>subject_id</TAG>
+        <VALUE>5c60a33b-e4c1-4fb8-993d-7da183c2fd78</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>gender</TAG>
+        <VALUE>male</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>phenotype</TAG>
+        <VALUE>iPSC</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>ENA-CHECKLIST</TAG>
+        <VALUE>ERC000026</VALUE>
+      </SAMPLE_ATTRIBUTE>
+    </SAMPLE_ATTRIBUTES>
+  </SAMPLE>
+</SAMPLE_SET>
