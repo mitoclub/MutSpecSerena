@@ -1,0 +1,163 @@
+
+WGS data from Serenas paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6506336/
+The whole dataset is about 2500 cram files totally is around ~ 11.5 Tb.
+EGAD00001004583 - code of the dataset
+
+0. I got login and password from EGA (european genome archive): https://www.ebi.ac.uk/ega, konstantin.popadin@unil.ch, ImmanuelKant2018
+
+
+1. To download EGA dataset, I used python client pyega3: https://github.com/EGA-archive/ega-download-client
+
+2. created CREDENTIAL_FILE
+{
+    "username": "konstantin.popadin@unil.ch",
+    "password": "ImmanuelKant2018",    
+    "client_secret":"AMenuDLjVdVo4BSwi0QD54LL6NeVDEZRzEQUJ7hJOM3g4imDZBHHX0hNfKHPeQIGkskhtCmqAJtt_jm7EKq-rWw"
+}
+
+3. login to fdata1.epfl.ch (this machine can connect to the outside, these things have to be done here)
+ssh popadin@fdata1.epfl.ch
+
+4. create a virtual environment for Python 3 in this machine, since it doesn't have the modules available on our machines, activate it and then install pyega3 in this environment. Do notice that here you're not using the option --user.
+virtualenv-3 --system-site-packages venvs/fdata.pyega3
+source venvs/fdata.pyega3/bin/activate
+pip install pyega3
+
+5. From now on, every time you need to run this you'll have to run the second command (source), since this is your own python environment:
+source venvs/fdata.pyega3/bin/activate 
+
+6. run pyega3 command: 
+screen
+pyega3 -cf /work/gr-fe/kostya/Serena/head/CREDENTIALS_FILE -c 12 fetch EGAD00001004583 --saveto /work/gr-fe/kostya/Serena/body/1raw
+
+7. if I need to rerun it (I hope python script is clever enough to check what was downloaded allready and what - was not yet):
+ssh popadin@fdata1.epfl.ch
+source venvs/fdata.pyega3/bin/activate 
+screen
+pyega3 -cf /work/gr-fe/kostya/Serena/head/CREDENTIALS_FILE -c 20 fetch EGAD00001004583 --saveto /work/gr-fe/kostya/Serena/body/1raw
+OR 
+pyega3 -cf /work/gr-fe/kostya/Serena/head/CREDENTIALS_FILE -c 20 fetch EGAD00001004583 --saveto /scratch/popadin
+# scratch of fdata1  is on fidis cluster
+
+8. currently I am waiting for the moment when work/gr-fe/ will be increased by 10Tb to proceed analyses
+fsu /work/gr-fe
+
+Group              Used GB     Quota GB
+-----              -------     --------
+gr-fe                91704        93184
+as soon as we have 10Tb more, I need to move everything to work/gr-fe....., check md5 sum and start to map it. 
+
+8A: we got extra space => copy everything from scratch to work: 
+ssh popadin@fidis.epfl.ch
+cd scratch/popadin
+ls | wc -l # 2439
+cp -R . /work/gr-fe/kostya/Serena/body/1raw/Crams2439/
+
+8B: md5 sum check:
+each folder has two files: cram and cram.md5. So we need to walk throuh each folder and compare de novo estimated md5 with one, written within the cram.md5.
+
+Sbatch 02B.
+
+cd 
+Sinteract -n 16 -t 01:00:00 -m 32G -p debug
+
+md5sum *.cram >new.md5   # get md5 for cram file. It will have a line like this: '956a0d5b26eda2fab37e7e53236ae13f  20024_3#2.cram'
+less 20024_3#2.cram.md5  # original (old) md5 file looks like this: '956a0d5b26eda2fab37e7e53236ae13f'
+grep -vf 20024_3#2.cram.md5 new >out # so we ask if the line in the old file is existed in the new one. If yes - we expect out be empty.
+
+
+first get md5sum of directory1 all files and write to a file.
+
+find dir1 -type f -exec md5sum '{}' + >dir1_checksum.txt
+Then find all directory2 files checksum and output those checksums didn't match using grep -vf filename.
+
+find dir2 -type f -exec md5sum '{}' + | grep -vf dir1_checksum.txt
+  
+
+
+9. Also we need to understand if uploaded files are aligned or not-aligned cram files. I found no info about this in the description.
+So, I have to investigate it playing with files. Let's go.
+http://www.ebi.ac.uk/ena/about/cram_toolkit
+TEST:
+ssh popadin@fidis.epfl.ch
+cd /scratch/popadin/EGAF00002339949
+cp 22101_1#24.cram /work/gr-fe/kostya/Serena/body/1raw/
+cd /work/gr-fe/kostya/Serena/body/1raw/
+ls -l -h # -rw-r--r-- 1 popadin gr-fe 1.6G Aug 29 13:47 22101_1#24.cram
+Sinteract -n 16 -t 01:00:00 -m 32G -p debug
+$ module load gcc/7.4.0
+$ module load samtools/1.9
+$ samtools view 22101_1#24.cram 1 > -o out.txt
+[main_samview] random alignment retrieval only works for indexed BAM or CRAM files.
+
+$ samtools index 22101_1#24.cram 
+$ ls 
+22101_1#24.cram  22101_1#24.cram.crai
+$ ls -l -h
+total 1.6G
+-rw-r--r-- 1 popadin gr-fe 1.6G Aug 29 13:47 22101_1#24.cram
+-rw-r--r-- 1 popadin gr-fe  68K Aug 29 15:24 22101_1#24.cram.crai
+
+$ samtools view 22101_1#24.cram MT -o MT.txt
+$ ls -l -h
+total 1.6G
+-rw-r--r-- 1 popadin gr-fe 1.6G Aug 29 13:47 22101_1#24.cram
+-rw-r--r-- 1 popadin gr-fe  68K Aug 29 15:24 22101_1#24.cram.crai
+-rw-r--r-- 1 popadin gr-fe 7.3M Aug 29 15:26 MT.txt
+
+$ wc -l MT.txt
+15674 MT.txt
+
+$ vim MT.txt
+explained on https://en.wikipedia.org/wiki/SAM_(file_format)
+column 5: MAPQ	Int	MApping Quality: -10*log10(probability that mapping position is wrong): the higher the value the better, but if it is 255 - p value unavilaible. 
+
+$ samtools mpileup 22101_1#24.cram -r MT -o MT.pileup
+$ ls -l -h
+-rw-r--r-- 1 popadin gr-fe 1.6G Aug 29 13:47 22101_1#24.cram
+-rw-r--r-- 1 popadin gr-fe  68K Aug 29 15:24 22101_1#24.cram.crai
+-rw-r--r-- 1 popadin gr-fe 3.9M Aug 29 16:31 MT.pileup
+-rw-r--r-- 1 popadin gr-fe 7.3M Aug 29 15:26 MT.txt
+
+$ wc -l MT.txt
+16569 MT.pileup
+
+
+$ vim MT.pileup
+
+##### 
+Костя, вот пороги для того чтобы МЯГКО экстрагировать данные по риду 1:
+samtools view -M -f 0x40 -F 0x4 -u ../hg19.bam $chrPoint 2>/dev/null | samtools mpileup -A --ff 4 -B -x - 2>/dev/null
+для того чтобы МЯГКО экстрагировать данные по риду 2:  
+samtools view -M -f 0x80 -F 0x4 -u ../hg19.bam $chrPoint 2>/dev/null | samtools mpileup -A --ff 4 -B -x - 2>/dev/null
+
+view  
+-M Use the multi-region iterator on the union of the BED file and command-line region arguments. This avoids re-reading the same regions of files so can sometimes be much faster. Note this also removes duplicate sequences. Without this a sequence that overlaps multiple regions specified on the command line will be reported multiple times. I didn't note effect of this file on mtDNA - probably - because it is impossible, that within mtDNA (within this regions) a read can be mapped to different locations.
+-u Output uncompressed BAM. This option saves time spent on compression/decompression and is thus preferred when the output is piped to another samtools command.
+-F Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/) [0].
+-F 0x4 NOT unmapped reads https://broadinstitute.github.io/picard/explain-flags.html
+-f Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/) [0].
+-f 0x40 / 0x80  first / second read in pair https://broadinstitute.github.io/picard/explain-flags.html
+
+mpileup 
+-A  Do not skip anomalous read pairs in variant calling.
+--ff 4  Filter flags: skip reads with mask bits set [UNMAP] // я использую этот дубль т.к. view -F 0x4 иногда может не срабатывать (по неизвестным причинам)
+-B Disable base alignment quality (BAQ) computation. // ускоряет анализ, обычно не нужен
+-x Disable read-pair overlap detection. // ускоряет анализ
+
+
+samtools view -M -f 0x40 -F 0x4 22101_1#24.cram MT -o MT1.txt
+samtools view -M -f 0x80 -F 0x4 22101_1#24.cram MT -o MT2.txt
+
+
+samtools mpileup 22101_1#24.cram -O --s -r MT -o MT.pileup
+
+samtools mpileup -uf ref.fa all-aln.bam | bcftools view -vcs xxx -1 yyy - > out.vcf  
+
+
+10. share some files with Kant 
+
+cd SerenaKant/
+popadin@SV-66L-004:~/SerenaKant$ scp -r popadin@helvetios.epfl.ch:/work/gr-fe/kostya/Serena/body/1raw/Crams2439/EGAF0000233812* .
+upload them to https://drive.switch.ch
+ 
