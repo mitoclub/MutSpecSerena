@@ -16,5 +16,5 @@ Here the column <FILE_NAME> looks like a `.cram` file name.
 
 Here one can find the sample name `MSM0.86_s2` for the file `EGAN00001938909` and use it to map `.cram` files to samples names.
 
-## treatment_for_samples.xls
+## Sample_to_treatment_map.txt
 This table was downloaded separately from https://data.mendeley.com/datasets/m7r4msjb4c/2#file-0c79e689-8709-40cc-b623-e4b8d168af07. It contains info about treatment for every sample. 
