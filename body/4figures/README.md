@@ -24,4 +24,3 @@ A figure with variant reads frequency and counts of samples that exact variant. 
 3. Calculate mean reads frequency for each variant among subsamples within each sample
 4. Average the variant frequencies among all samples and count the number of samples with each variant
 5. Plot variant frequencies vs samples counts
-5. Plot the counts
