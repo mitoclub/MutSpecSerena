@@ -32,3 +32,17 @@ This script parses through all `.xml` files in `samples` directory to find the s
 
 #### What is it for
 This script merges all **Mutect** results into  one big tables and adds columns from `treatment_mapped_to_kostya_files.csv` for each `.cram` file. The output is exported to `mutations_vs_treatment.csv` (__! `NA` are not dropped__)
+
+
+
+### basic_analysis.R	
+#### Input
+`mutations_vs_treatment.csv`
+
+#### Output
+`All_mutations_numbers_vs_treatment.tiff`
+`Samples_count_vs_variant_frequency.tiff`
+`Subsamples_count_vs_variant_frequency.tiff`
+
+#### What is it for
+This script creates three plots. The description of the plots and a short description of the idea behind them are provided in `/4figures/README.md`.
