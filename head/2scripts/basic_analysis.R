@@ -130,7 +130,7 @@ p <- ggplot(
     values = wes_palette("FantasticFox1", 15, type = "continuous")
     )
 
-tiff(filename = "../../body/4figures//All_mutations_numbers_vs_treatment.tiff", res = 250, width = 1100, height = 2050)
+png(filename = "../../body/4figures//All_mutations_numbers_vs_treatment.png", res = 250, width = 1100, height = 2050)
 print(p)
 dev.off()
 
@@ -173,7 +173,7 @@ p <- ggplot(
     panel.grid = element_blank()
     )
 
-tiff(filename = "../../body/4figures/Subsamples_count_vs_variant_frequency.tiff",res = 300, width = 1800, height = 1200)
+png(filename = "../../body/4figures/Subsamples_count_vs_variant_frequency.png",res = 300, width = 1800, height = 1200)
 print(p)
 dev.off()
 
@@ -217,7 +217,7 @@ p <- ggplot(
     panel.grid = element_blank()
     )
 
-tiff(filename = "../../body/4figures/Samples_count_vs_variant_frequency.tiff",res = 300, width = 1800, height = 1200)
+png(filename = "../../body/4figures/Samples_count_vs_variant_frequency.png",res = 300, width = 1800, height = 1200)
 print(p)
 dev.off()
 
