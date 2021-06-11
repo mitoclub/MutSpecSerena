@@ -1,0 +1,12 @@
+ANNOVAR Version:
+	$Date: 2019-10-24 00:05:27 -0400 (Thu, 24 Oct 2019) $
+ANNOVAR Information:
+	For questions, comments, documentation, bug reports and program update, please visit http://www.openbioinformatics.org/annovar/
+ANNOVAR Command:
+	/work/gr-fe/kostya/SOFT/annovar/annotate_variation.pl -geneanno -dbtype ensGene -buildver GRCh37_MT /scratch/popadin/MtMutectAnnovar/22217_1#1.cram.MT.cram.TempMt.Vcf4 /work/gr-fe/kostya/SOFT/annovar/humandb/ -out /scratch/popadin/MtMutectAnnovar/22217_1#1.cram.MT.cram.mutect.mt.ann
+ANNOVAR Started:
+	Tue Dec 17 00:26:23 2019
+NOTICE: Output files are written to /scratch/popadin/MtMutectAnnovar/22217_1#1.cram.MT.cram.mutect.mt.ann.variant_function, /scratch/popadin/MtMutectAnnovar/22217_1#1.cram.MT.cram.mutect.mt.ann.exonic_variant_function
+NOTICE: Reading gene annotation from /work/gr-fe/kostya/SOFT/annovar/humandb/GRCh37_MT_ensGene.txt ... Done with 37 transcripts (including 24 without coding sequence annotation) for 37 unique genes
+NOTICE: Processing next batch with 43 unique variants in 43 input lines
+NOTICE: Reading FASTA sequences from /work/gr-fe/kostya/SOFT/annovar/humandb/GRCh37_MT_ensGeneMrna.fa ... Done with 8 sequences
