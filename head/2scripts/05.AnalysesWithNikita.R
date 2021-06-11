@@ -35,6 +35,21 @@ summary(Mut[Mut$CaseControl == 'Case',]$AF.AlternativeAlleleFrequency)
 hist(Mut[Mut$CaseControl == 'Case',]$AF.AlternativeAlleleFrequency, breaks = 50, main = 'cases (minus variants)', xlab = 'VAF(ALT)')
 
 ############################################################
+##### REMOVE WEAK VARIATNS (NOT SUPPORTED BY MINIMUM NUMBER OF READS)
+############################################################
+
+summary(Mut$AP.RefReadDepth)
+summary(Mut$AP.AltReadDepth)
+summary(Mut$F1R2.Alt)
+summary(Mut$F2R1.Alt)
+
+nrow(Mut) # 6697
+Mut = Mut[Mut$F1R2.Alt > 1 & Mut$F2R1.Alt > 1,] # more than one at least > 5
+nrow(Mut) # 2350, 2000, 1367
+
+names(Mut)
+
+############################################################
 ##### MUT SPECTRUM FOR ALL CASES
 ##### MAAANY TRANSVERSIONS!!!!! ?????
 ############################################################
@@ -57,32 +72,26 @@ Mut$Mutation = 1
 Agg = aggregate(Mut$Mutation, by = list(Mut$Treatment), FUN = sum)
 names(Agg)=c('Treatment','NumberOfDeNovoMut')
 Agg=Agg[order(-Agg$NumberOfDeNovoMut),]
-ListOfTopTenMutagens = Agg$Treatment[1:10]
+ListOfTopMutagens = Agg$Treatment[1:30]
 
 ############################################################
 ##### WHAT IS THE MUTATIONAL SPECTRUM OF THE TOP10 MOST MUTAGENIC TREATMENTS
 ##### again - it might be reasonable to group them into categories (as in paper => later)
 ############################################################
 
-ListOfTopTenMutagens
-for (i in 1:length(ListOfTopTenMutagens))
+ListOfTopMutagens
+for (i in 1:length(ListOfTopMutagens))
 { # i = 1
-  Temp = Mut[Mut$Treatment == ListOfTopTenMutagens[i],]
+  Temp = Mut[Mut$Treatment == ListOfTopMutagens[i],]
   MutSpec = data.frame(table(Temp$Subs))
   names(MutSpec)=c('Subs','Number')
   MutSpec$Freq = MutSpec$Number/sum(MutSpec$Number)
-  MutSpec$Treatment = ListOfTopTenMutagens[i]
+  MutSpec$Treatment = ListOfTopMutagens[i]
   MutSpec = MutSpec[order(-MutSpec$Freq),]
   
   GlobalMutSpec = rbind(GlobalMutSpec,MutSpec)
  }
 
+write.table(GlobalMutSpec,"../../body/3results/05.AnalysesWithNikita.R.txt")
+
 dev.off()
-
-
-
-
-
-  
-  
-  
