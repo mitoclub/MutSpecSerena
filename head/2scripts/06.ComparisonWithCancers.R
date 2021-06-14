@@ -26,18 +26,19 @@ for (i in 1:length(AllTreatments))
   for (j in 1:nrow(OneMutagen))
   { # j =1 
     OneSubs = OneMutagen[j,]
-    controls = c(CancerMutSpec[CancerMutSpec$Subs == OneSubs$Subs,]$Number,sum(CancerMutSpec$Number))
-    cases = c(OneSubs$Number,Total)
+    controls = c(CancerMutSpec[CancerMutSpec$Subs == OneSubs$Subs,]$Number,sum(CancerMutSpec$Number)-CancerMutSpec[CancerMutSpec$Subs == OneSubs$Subs,]$Number)
+    cases = c(OneSubs$Number,Total-OneSubs$Number)
     X = rbind(cases,controls)
     fisher.test(X)
+    FisherPvalue = as.numeric(fisher.test(X)[1])
     FisherMinLog10Pvalue = -log10(as.numeric(fisher.test(X)[1]))
     FisherOdds = as.numeric(fisher.test(X)[3])
-    OneLine = data.frame(t(c(AllTreatments[i],OneSubs$Subs,cases,controls,FisherMinLog10Pvalue,FisherOdds)))
+    OneLine = data.frame(t(c(AllTreatments[i],OneSubs$Subs,cases,controls,FisherPvalue,FisherMinLog10Pvalue,FisherOdds)))
     Final = rbind(Final,OneLine)
   }
 }
 
-names(Final) = c('Treatment','Subs','NumberInCases','TotalInCases','NumberInControls','TotalInControls','FisherMinLog10Pvalue','FisherOdds')
+names(Final) = c('Treatment','Subs','NumberInCases','TotalInCases','NumberInControls','TotalInControls','FisherPvalue','FisherMinLog10Pvalue','FisherOdds')
 Final$FisherMinLog10Pvalue = as.numeric(Final$FisherMinLog10Pvalue)
 Final = Final[order(-Final$FisherMinLog10Pvalue),]
 
