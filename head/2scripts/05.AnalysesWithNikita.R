@@ -44,7 +44,7 @@ summary(Mut$F1R2.Alt)
 summary(Mut$F2R1.Alt)
 
 nrow(Mut) # 6697
-Mut = Mut[Mut$F1R2.Alt > 1 & Mut$F2R1.Alt > 1,] # more than one at least > 5
+Mut = Mut[Mut$F1R2.Alt >= 10 & Mut$F2R1.Alt >= 10,] # more than one at least > 5
 nrow(Mut) # 2350, 2000, 1367
 
 names(Mut)

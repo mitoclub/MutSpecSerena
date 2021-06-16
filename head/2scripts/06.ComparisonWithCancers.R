@@ -10,6 +10,7 @@ Cancers = read.table("../../body/1raw/mtDNA_snv_Oct2016.txt", sep = '\t', header
 Cancers$Subs = paste(Cancers$ref,Cancers$var,sep='>')
 CancerMutSpec = data.frame(table(Cancers$Subs))
 names(CancerMutSpec)=c('Subs','Number')
+CancerMutSpec # here we have expected
 
 
 ############################################################
@@ -38,9 +39,15 @@ for (i in 1:length(AllTreatments))
   }
 }
 
-names(Final) = c('Treatment','Subs','NumberInCases','TotalInCases','NumberInControls','TotalInControls','FisherPvalue','FisherMinLog10Pvalue','FisherOdds')
+names(Final) = c('Treatment','Subs','PositiveOutcomesInCases','NegativeOutcomesInCases','PositiveOutcomesInControls','NegativeOutcomesInControls','FisherPvalue','FisherMinLog10Pvalue','FisherOdds')
 Final$FisherMinLog10Pvalue = as.numeric(Final$FisherMinLog10Pvalue)
 Final = Final[order(-Final$FisherMinLog10Pvalue),]
 
-write.table(Final,"../../body/3results/06.ComparisonWithCancers.R")
+write.table(Final,"../../body/3results/06.ComparisonWithCancers.R.txt")
+
+Final = Final[Final$Treatment != 'AllTreatments',]
+str(Final)
+Final = Final[as.numeric(Final$FisherPvalue) <= 0.01/(12*150),]  # Bonferroni correction for multiple testing:  12 substitutions * number of chemicals
+summary(as.numeric(Final$FisherOdds)) # all are more than one!!! it is good = it is an expectation because this type of mutation is increased, not decreased due to mutagen
+
 
